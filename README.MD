@@ -1,6 +1,6 @@
 # Safety Jim
 
-A bot aimed to create a better anti-raid experiance. All accounts detected in a raid will be added to a database, and accross all guilds with a set action will have said action taken agaisnt them. Check out our [Crystal](https://crystal-lang.org/) [repo](https://github.com/ibx34/Smarter-Safety-Jim-py)!.
+A bot aimed to create a better anti-raid experiance. All accounts detected in a raid will be added to a database, and accross all guilds with a set action will have said action taken agaisnt them. Check out our [Crystal](https://crystal-lang.org/) [repo](https://github.com/ibx34/Smarter-Safety-Jim)!.
 
 ## Contributing
 
