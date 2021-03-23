@@ -5,13 +5,15 @@ import datetime as date
 import json
 import logging
 import pathlib
+from datetime import timedelta
 
 import aiohttp
 import discord
 from discord.ext import commands
 
-from .Context import Context
 from . import config
+from .Context import Context
+
 #from .database import init_db
 #from .Database import Connector as DatabaseConnector
 # from .Utils import Infractions, Logging
@@ -21,10 +23,9 @@ log = logging.getLogger("NotABot")
 
 async def get_extensions():
 
-    found = ["jishaku"]#,"safety.Cogs"]
+    found = ["jishaku","safety.Cogs"]
 
     return found
-
 
 def mentions():
 
@@ -103,10 +104,11 @@ class SafetyJim(commands.AutoShardedBot):
         self.commands_used = 0
         self.started_at = date.datetime.utcnow()
         self.bot_config = dict()
-        self.in_raid = dict()
-        self.acting_cache = dict()
-        self.acting_on_in_raid = False
-        self.database_connection = None
+        self.backup_cache = dict()
+        self.active_cache = dict()
+        self.acting_on_active = False
+        self.locked_channels = dict()
+        self.next_ban_wave = date.datetime.utcnow() + timedelta(hours=1)
         # self.slash = SlashCommand(self, override_type=True, sync_on_cog_reload=True, sync_commands=True)
     
     async def start(self):
@@ -116,6 +118,12 @@ class SafetyJim(commands.AutoShardedBot):
 
     async def on_ready(self):
         
+        self.guild = self.get_guild(config.MAIN_SERVER)
+        self.global_ban_logs = self.guild.get_channel(config.GLOBAL_BAN_LOGS)
+        
+        for name in await get_extensions():
+            self.load_extension(name)
+
         print("Online....................")
 
     async def process_commands(self, message):

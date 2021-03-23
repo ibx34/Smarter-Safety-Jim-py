@@ -11,12 +11,12 @@ class Context(commands.Context):
 
     async def yes(self,content=None,*,embed=None,**kwargs):
 
-        return await super().send("<:greenCheck2:823546642517983252> " + content, embed=embed, **kwargs)
+        return await super().send("<:greenTick:823666563826843649> " + content, embed=embed, **kwargs)
 
     async def no(self,content=None,*,embed=None,**kwargs):
 
-        return await super().send("<:no:823546621324165121> " + content, embed=embed, **kwargs)
+        return await super().send("<:no:823666563462856716> " + content, embed=embed, **kwargs)
 
     async def eh(self,content=None,*,embed=None,**kwargs):
 
-        return await super().send("<:eh:823546667784994898> " + content, embed=embed, **kwargs)
+        return await super().send("<:eh:823666563957260299> " + content, embed=embed, **kwargs)
