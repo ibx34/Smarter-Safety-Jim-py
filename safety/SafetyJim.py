@@ -1,6 +1,7 @@
 import ast
 import asyncio
 import collections
+import aioredis
 import datetime as date
 import json
 import logging
@@ -117,7 +118,7 @@ class SafetyJim(commands.AutoShardedBot):
         await super().start(config.TOKEN)
 
     async def on_ready(self):
-        
+        self.redis = await aioredis.create_redis_pool("redis://localhost", loop=self.loop)
         self.guild = self.get_guild(config.MAIN_SERVER)
         self.global_ban_logs = self.guild.get_channel(config.GLOBAL_BAN_LOGS)
         
