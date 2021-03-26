@@ -1,28 +1,32 @@
 import asyncio
 
+
 class plural:
     def __init__(self, value):
         self.value = value
+
     def __format__(self, format_spec):
         v = self.value
-        singular, sep, plural = format_spec.partition('|')
-        plural = plural or f'{singular}s'
+        singular, sep, plural = format_spec.partition("|")
+        plural = plural or f"{singular}s"
         if abs(v) != 1:
-            return f'{v} {plural}'
-        return f'{v} {singular}'
+            return f"{v} {plural}"
+        return f"{v} {singular}"
 
-def human_join(seq, delim=', ', final='or'):
+
+def human_join(seq, delim=", ", final="or"):
     size = len(seq)
     if size == 0:
-        return ''
+        return ""
 
     if size == 1:
         return seq[0]
 
     if size == 2:
-        return f'{seq[0]} {final} {seq[1]}'
+        return f"{seq[0]} {final} {seq[1]}"
 
-    return delim.join(seq[:-1]) + f' {final} {seq[-1]}'
+    return delim.join(seq[:-1]) + f" {final} {seq[-1]}"
+
 
 class TabularData:
     def __init__(self):
@@ -57,14 +61,14 @@ class TabularData:
         +-------+-----+
         """
 
-        sep = '+'.join('-' * w for w in self._widths)
-        sep = f'+{sep}+'
+        sep = "+".join("-" * w for w in self._widths)
+        sep = f"+{sep}+"
 
         to_draw = [sep]
 
         def get_entry(d):
-            elem = '|'.join(f'{e:^{self._widths[i]}}' for i, e in enumerate(d))
-            return f'|{elem}|'
+            elem = "|".join(f"{e:^{self._widths[i]}}" for i, e in enumerate(d))
+            return f"|{elem}|"
 
         to_draw.append(get_entry(self._columns))
         to_draw.append(sep)
@@ -73,13 +77,16 @@ class TabularData:
             to_draw.append(get_entry(row))
 
         to_draw.append(sep)
-        return '\n'.join(to_draw)
+        return "\n".join(to_draw)
 
-async def prompt(self,message, *, timeout=60.0, delete_after=True, reacquire=True, author_id=None):
+
+async def prompt(
+    self, message, *, timeout=60.0, delete_after=True, reacquire=True, author_id=None
+):
     if not self.channel.permissions_for(self.me).add_reactions:
-        raise RuntimeError('Bot does not have Add Reactions permission.')
+        raise RuntimeError("Bot does not have Add Reactions permission.")
 
-    #fmt = f'{message}\n\nReact with \N{WHITE HEAVY CHECK MARK} to confirm or \N{CROSS MARK} to deny.'
+    # fmt = f'{message}\n\nReact with \N{WHITE HEAVY CHECK MARK} to confirm or \N{CROSS MARK} to deny.'
 
     author_id = author_id or self.author.id
     msg = await self.send(message)
@@ -94,23 +101,23 @@ async def prompt(self,message, *, timeout=60.0, delete_after=True, reacquire=Tru
 
         codepoint = str(payload.emoji)
 
-        if codepoint == '<:greenTick:823666563826843649>':
+        if codepoint == "<:greenTick:823666563826843649>":
             confirm = True
             return True
-        elif codepoint == '<:no:823666563462856716>':
+        elif codepoint == "<:no:823666563462856716>":
             confirm = False
             return True
 
         return False
 
-    for emoji in ('<:greenTick:823666563826843649>', '<:no:823666563462856716>'):
+    for emoji in ("<:greenTick:823666563826843649>", "<:no:823666563462856716>"):
         await msg.add_reaction(emoji)
 
     if reacquire:
         await self.release()
 
     try:
-        await self.bot.wait_for('raw_reaction_add', check=check, timeout=timeout)
+        await self.bot.wait_for("raw_reaction_add", check=check, timeout=timeout)
     except asyncio.TimeoutError:
         confirm = None
 
@@ -121,4 +128,4 @@ async def prompt(self,message, *, timeout=60.0, delete_after=True, reacquire=Tru
         if delete_after:
             await msg.delete()
     finally:
-            return confirm
+        return confirm

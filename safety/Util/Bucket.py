@@ -9,45 +9,6 @@ class SpamBucket:
     ...
     # TODO: work on this and take the thing from below!
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     # def __init__(self, redis, key_format, max_actions, period, extra_actions):
     #     self.redis = redis
     #     self.key_format = key_format

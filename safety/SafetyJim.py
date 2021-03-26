@@ -2,6 +2,7 @@ import ast
 import asyncio
 import collections
 import aioredis
+import asyncpg
 import datetime as date
 import json
 import logging
@@ -15,18 +16,20 @@ from discord.ext import commands
 from . import config
 from .Context import Context
 
-#from .database import init_db
-#from .Database import Connector as DatabaseConnector
+# from .database import init_db
+# from .Database import Connector as DatabaseConnector
 # from .Utils import Infractions, Logging
 # from discord_slash import SlashCommand, SlashContext
 
 log = logging.getLogger("NotABot")
 
+
 async def get_extensions():
 
-    found = ["jishaku","safety.Cogs"]
+    found = ["jishaku", "safety.Cogs"]
 
     return found
+
 
 def mentions():
 
@@ -56,12 +59,10 @@ def intents():
     return intents
 
 
-
 async def get_pre(bot, message):
 
     return commands.when_mentioned_or(config.PREFIX)(bot, message)
     # ^^ Enable if anything goes wrong with per-server prefixes.
-
 
     # if not message.guild:
     #     return commands.when_mentioned_or(config.PREFIX)(bot, message)
@@ -76,6 +77,7 @@ async def get_pre(bot, message):
 def start_session(bot):
 
     return aiohttp.ClientSession(loop=bot.loop)
+
 
 class SafetyJim(commands.AutoShardedBot):
     def __init__(self):
@@ -111,19 +113,28 @@ class SafetyJim(commands.AutoShardedBot):
         self.locked_channels = dict()
         self.next_ban_wave = date.datetime.utcnow() + timedelta(hours=1)
         # self.slash = SlashCommand(self, override_type=True, sync_on_cog_reload=True, sync_commands=True)
-    
+
     async def start(self):
         self.session = start_session(self)
 
         await super().start(config.TOKEN)
 
     async def on_ready(self):
-        self.redis = await aioredis.create_redis_pool("redis://localhost", loop=self.loop)
+        # self.redis = await aioredis.create_redis_pool("redis://localhost", loop=self.loop)
+        self.pool = await asyncpg.create_pool(**config.DATABASE, max_size=150)
+
         self.guild = self.get_guild(config.MAIN_SERVER)
         self.global_ban_logs = self.guild.get_channel(config.GLOBAL_BAN_LOGS)
-        
+
         for name in await get_extensions():
             self.load_extension(name)
+
+        try:
+            with open("schema.sql") as f:
+                await self.pool.execute(f.read())
+
+        except Exception as e:
+            print(f"Error in schema:\n{e}")
 
         print("Online....................")
 
@@ -132,7 +143,7 @@ class SafetyJim(commands.AutoShardedBot):
         ctx = await self.get_context(message, cls=Context)
         if ctx.command is None:
             return
-        
+
         self.commands_used += 1
         await self.invoke(ctx)
 

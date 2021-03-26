@@ -10,6 +10,7 @@ from .. import Plugin
 
 log = logging.getLogger(__name__)
 
+
 class Misc(Plugin):
 
     ...
